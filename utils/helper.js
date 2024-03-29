@@ -18,7 +18,7 @@ const apiError = (res, statusCode, message) => {
 
 const getAction = (num) => {
   if (num == 1) return "up";
-  else if (num == 2) return "up";
+  else if (num == 2) return "down";
   else if (num == 3) return "left";
   else if (num == 4) return "right";
   else return "Invalid action number";
