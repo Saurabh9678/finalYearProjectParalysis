@@ -8,6 +8,13 @@ const { apiError, apiResponse, getAction } = require("../utils/helper");
 exports.getActions = async (req, res) => {
   try {
     const userActions = await Action.findOne({ user: req.user._id });
+    if (!userActions) {
+      await Action.create({
+        user: req.user._id,
+        deviceId: req.user.deviceId
+      });
+      return apiResponse(res, 200, "No Actions found", []);
+    }
     if (userActions.actions.length === 0) {
       return apiResponse(res, 200, "No actions found", []);
     }
