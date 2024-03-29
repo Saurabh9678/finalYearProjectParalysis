@@ -1,6 +1,7 @@
 const Action = require("../models/action");
 const History = require("../models/history");
 const { apiError, apiResponse, getAction,getCurrentTimeInIST } = require("../utils/helper");
+const {io} = require("../index")
 
 // @desc    Get all actions
 // @route   GET /api/v1/action
@@ -82,6 +83,7 @@ exports.triggerAction = async (req, res) => {
       action: action.action,
       timeStamps: time,
     });
+    io.to(req.user.deviceId).emit("trigger", action.action);
     return apiResponse(res, 200, "Action triggered", action);
   } catch (error) {
     return apiError(res, 500, String(error.message));

@@ -1,5 +1,7 @@
 const app = require("./app");
 const keys = require("./utils/constants.js");
+const { Server } = require("socket.io");
+const http = require("http");
 
 const connectDataBase = require("./database/database.js");
 
@@ -10,13 +12,33 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-
-
 //Connecting to database
 connectDataBase();
 
+//Socket.io
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: "*",
+  },
+});
 
-const server = app.listen(keys.PORT, () => {
+io.on("connection", (socket)=>{
+  console.log(`New connection: ${socket.id}`);
+  socket.on("join_room", (data)=>{
+    socket.join(data);
+    console.log(`User with ID: ${socket.id} joined room: ${data}`);
+  })
+  socket.on("disconnect", ()=>{
+    console.log(`User with ID: ${socket.id} disconnected`);
+  })
+})
+
+
+
+
+server.listen(keys.PORT, () => {
   console.log(`Server is running in PORT:${keys.PORT}`);
 });
 
@@ -31,3 +53,6 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   });
 });
+
+
+module.exports = {io};
