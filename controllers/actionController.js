@@ -1,8 +1,13 @@
 const Action = require("../models/action");
 const History = require("../models/history");
-const { apiError, apiResponse, getAction,getCurrentTimeInIST } = require("../utils/helper");
-const {io} = require("../index")
+const {
+  apiError,
+  apiResponse,
+  getAction,
+  getCurrentTimeInIST,
+} = require("../utils/helper");
 
+exports.socketAction = "Hello World!";
 // @desc    Get all actions
 // @route   GET /api/v1/action
 // @access  Private
@@ -61,34 +66,35 @@ exports.addAction = async (req, res) => {
 // @route   POST /api/v1/action/trigger
 // @access  Private
 
-exports.triggerAction = async (req, res) => {
-  const { motion_code } = req.body;
-  try {
-    console.log(`motion_code: ${motion_code}, deviceId: ${req.user.deviceId}`);
-    const userAction = await Action.findOne({ user: req.user._id });
-    if (!userAction) {
-      return apiError(res, 404, "No action found");
-    }
-    const direction = getAction(motion_code);
-    const action = userAction.actions.find(
-      (act) => act.direction.toLowerCase() === direction.toLowerCase()
-    );
-    if (!action) {
-      return apiError(res, 404, "Action not found");
-    }
-    const time = getCurrentTimeInIST();
-    await History.create({
-      user: req.user._id,
-      direction: action.direction,
-      action: action.action,
-      timeStamps: time,
-    });
-    io.to(req.user.deviceId).emit("trigger", action.action);
-    return apiResponse(res, 200, "Action triggered", action);
-  } catch (error) {
-    return apiError(res, 500, String(error.message));
-  }
-};
+// exports.triggerAction = async (req, res) => {
+//   const { motion_code } = req.body;
+//   try {
+//     console.log(`motion_code: ${motion_code}, deviceId: ${req.user.deviceId}`);
+//     const userAction = await Action.findOne({ user: req.user._id });
+//     if (!userAction) {
+//       return apiError(res, 404, "No action found");
+//     }
+//     const direction = getAction(motion_code);
+//     const action = userAction.actions.find(
+//       (act) => act.direction.toLowerCase() === direction.toLowerCase()
+//     );
+//     if (!action) {
+//       return apiError(res, 404, "Action not found");
+//     }
+//     const time = getCurrentTimeInIST();
+//     await History.create({
+//       user: req.user._id,
+//       direction: action.direction,
+//       action: action.action,
+//       timeStamps: time,
+//     });
+//     socketAction = action.action;
+//     return apiResponse(res, 200, "Action triggered", action);
+//   } catch (error) {
+//     console.log(error.message);
+//     return apiError(res, 500, String(error.message));
+//   }
+// };
 
 // @desc    Get all history
 // @route   GET /api/v1/action/history
@@ -105,3 +111,5 @@ exports.getHistory = async (req, res) => {
     return apiError(res, 500, String(error.message));
   }
 };
+
+

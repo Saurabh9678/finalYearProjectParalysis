@@ -19,7 +19,7 @@ router
   .get(isAuthenticatedUser, getActions);
 
 
-router.route("/trigger").post(isAuthenticatedDevice, triggerAction);
+// router.route("/trigger").post(isAuthenticatedDevice, triggerAction);
 
 router.route("/history").get(isAuthenticatedUser, getHistory);
 
