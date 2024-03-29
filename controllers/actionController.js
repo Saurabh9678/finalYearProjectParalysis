@@ -63,6 +63,7 @@ exports.addAction = async (req, res) => {
 exports.triggerAction = async (req, res) => {
   const { motion_code } = req.body;
   try {
+    console.log(`motion_code: ${motion_code}, deviceId: ${req.user.deviceId}`);
     const userAction = await Action.findOne({ user: req.user._id });
     if (!userAction) {
       return apiError(res, 404, "No action found");
