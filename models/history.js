@@ -14,6 +14,10 @@ const historySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  timeStamps: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 module.exports = mongoose.model("History", historySchema);

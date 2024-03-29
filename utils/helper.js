@@ -24,10 +24,18 @@ const getAction = (num) => {
   else return "Invalid action number";
 };
 
+const getCurrentTimeInIST = () => {
+  const now = new Date();
+  const istOffset = 5.5 * 60 * 60 * 1000;
+  const istTime = now.getTime() + istOffset;
+  return new Date(istTime).toISOString();
+};
+
 module.exports = {
   hashPassword,
   comparePassword,
   apiResponse,
   apiError,
-  getAction
+  getAction,
+  getCurrentTimeInIST
 };

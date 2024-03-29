@@ -1,6 +1,6 @@
 const Action = require("../models/action");
 const History = require("../models/history");
-const { apiError, apiResponse, getAction } = require("../utils/helper");
+const { apiError, apiResponse, getAction,getCurrentTimeInIST } = require("../utils/helper");
 
 // @desc    Get all actions
 // @route   GET /api/v1/action
@@ -11,7 +11,8 @@ exports.getActions = async (req, res) => {
     if (!userActions) {
       await Action.create({
         user: req.user._id,
-        deviceId: req.user.deviceId
+        deviceId: req.user.deviceId,
+        actions: [],
       });
       return apiResponse(res, 200, "No Actions found", []);
     }
@@ -49,7 +50,7 @@ exports.addAction = async (req, res) => {
       userAction.actions.push({ direction, action });
     }
     await userAction.save({ validateBeforeSave: false });
-    return apiResponse(res, 201, "Action added", actions);
+    return apiResponse(res, 201, "Action added", userAction.actions);
   } catch (error) {
     return apiError(res, 500, String(error.message));
   }
@@ -73,10 +74,12 @@ exports.triggerAction = async (req, res) => {
     if (!action) {
       return apiError(res, 404, "Action not found");
     }
+    const time = getCurrentTimeInIST();
     await History.create({
       user: req.user._id,
       direction: action.direction,
       action: action.action,
+      timeStamps: time,
     });
     return apiResponse(res, 200, "Action triggered", action);
   } catch (error) {
